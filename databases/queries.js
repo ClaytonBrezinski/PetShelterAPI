@@ -22,6 +22,21 @@ var db = pgp(dbConnection);
 // query functions
 module.exports = {
   getAllPets: getAllPets,
-  getPetById: getPetById,
-  createPet: createPet,
+  // getPetById: getPetById,
+  // createPet: createPet,
 };
+
+function getAllPets(req, res, next) {
+  db.any('select * from pets')
+    .then(function (data) {
+      res.status(200)
+        .json({
+          status: 'success',
+          data: data,
+          message: 'all pets retrieved'
+        });
+    })
+    .catch(function (err) {
+      return next(err);
+    });
+}
