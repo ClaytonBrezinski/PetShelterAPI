@@ -22,7 +22,7 @@ var db = pgp(dbConnection);
 // query functions
 module.exports = {
   getAllPets: getAllPets,
-  // getPetById: getPetById,
+  getPetById: getPetById,
   // createPet: createPet,
 };
 
@@ -34,6 +34,22 @@ function getAllPets(req, res, next) {
           status: 'success',
           data: data,
           message: 'all pets retrieved'
+        });
+    })
+    .catch(function (err) {
+      return next(err);
+    });
+}
+
+function getPetById(req, res, next) {
+  var pupID = parseInt(req.params.id);
+  db.one('select * from pets where id = $1', pupID)
+    .then(function (data) {
+      res.status(200)
+        .json({
+          status: 'success',
+          data: data,
+          message: 'Retrieved a pet'
         });
     })
     .catch(function (err) {

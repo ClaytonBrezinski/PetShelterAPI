@@ -12,7 +12,7 @@ express()
   .get('/', (req, res) => res.send("hello world"))
   // route handlers for server's REST API
   .get('/api/pets', db.getAllPets)
-  // .get('/api/pets/:id', db.getPetById)
+  .get('/api/pets/:id', db.getPetById)
   // .post('/api/puppies', db.createPet)
   .listen(PORT, () => console.log(`Listening on ${ PORT }`)
 )
