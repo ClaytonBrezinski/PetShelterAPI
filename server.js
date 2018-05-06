@@ -1,15 +1,34 @@
 const express = require("express");
-const path = require('path');
-const PORT = process.env.PORT || 3000
-const app = express();
+const path = require("path");
+const PORT = process.env.PORT || 3000;
 
-express()
-  .use(express.static(path.join(__dirname, 'public')))
-  .set('views', path.join(__dirname, 'views'))
-  .set('view engine', 'ejs')
-  .get('/', (req, res) => res.send("hello world"))
-  // will change this to: res.render('/dashboard'))
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
+var bodyParser = require("body-parser");
+var db = require("./databases/queries.js");
+var app = express();
 
+app.use(express.static(path.join(__dirname, "public")));
+app.use(bodyParser.json());
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+app.get("/", (req, res) => res.send("hello world"));
+// route handlers for server's REST API
+app.get("/api/pets", db.getAllPets);
+app.get("/api/pets/:id", db.getPetById);
+app.post("/api/pets", db.createPet);
 
-
+// DEV error handler - print out the stack trace
+// PROD error handler - remove stack traces
+app.get("env") === "development"
+    ? app.use((err, req, res, next) => {
+          res.status(err.code || 500).json({
+              status: "error",
+              message: err,
+          });
+      })
+    : app.use((err, req, res, next) => {
+          res.status(err.status || 500).json({
+              status: "error",
+              message: err.message,
+          });
+      });
+app.listen(PORT, () => console.log(`Listening on ${PORT}`));
