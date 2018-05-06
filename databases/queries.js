@@ -9,21 +9,19 @@ var options = {
 };
 // conect to the database
 var pgp = require("pg-promise")(options);
-
+var db;
 // if in prod, use heroku's URI to login
 if (process.env.NODE_ENV === "production") {
-    const dbConnection = {
+    db = pgp(keys.url);
+} else {
+    var db = pgp({
         host: keys.host,
         port: keys.port,
         database: keys.database,
         user: keys.user,
         password: keys.password,
-    };
-} else {
-    const dbConnection = process.keys.url;
+    });
 }
-
-var db = pgp(dbConnection);
 
 // query functions
 module.exports = {
