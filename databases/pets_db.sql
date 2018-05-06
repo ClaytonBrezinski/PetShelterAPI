@@ -1,8 +1,6 @@
 DROP DATABASE IF EXISTS pets_db; 
 CREATE DATABASE pets_db; 
  
-\c pets_db; 
- 
 CREATE TABLE pets( 
     ID SERIAL PRIMARY KEY,  
     name VARCHAR(256) NOT NULL,  

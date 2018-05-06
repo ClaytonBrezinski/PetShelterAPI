@@ -9,16 +9,19 @@ var options = {
 };
 // conect to the database
 var pgp = require("pg-promise")(options);
-
-const dbConnection = {
-    host: keys.host,
-    port: keys.port,
-    database: keys.database,
-    user: keys.user,
-    password: keys.password,
-};
-
-var db = pgp(dbConnection);
+var db;
+// if in prod, use heroku's URI to login
+if (process.env.NODE_ENV === "production") {
+    db = pgp(keys.url);
+} else {
+    var db = pgp({
+        host: keys.host,
+        port: keys.port,
+        database: keys.database,
+        user: keys.user,
+        password: keys.password,
+    });
+}
 
 // query functions
 module.exports = {
@@ -61,10 +64,12 @@ function getPetById(req, res, next) {
 function createPet(req, res, next) {
     req.body.lat = parseFloat(req.body.lat);
     req.body.long = parseFloat(req.body.long);
-    db.one(
+    db
+        .one(
             "insert into pets(name, type, breed, location, lat, long)" +
                 "values( ${name}, ${type}, ${breed}, ${location}, ${lat}, ${long}) RETURNING name, type",
-            req.body)
+            req.body
+        )
         .then(function(data) {
             res.status(200).json({
                 status: "success",
